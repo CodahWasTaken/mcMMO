@@ -104,11 +104,11 @@ public abstract class SkillCommand implements TabExecutor {
 
             //Header
 
-            //Link Header
-            if (mcMMO.p.getGeneralConfig().getUrlLinksEnabled()) {
-                player.sendMessage(LocaleLoader.getString("Overhaul.mcMMO.Header"));
-                TextComponentFactory.sendPlayerUrlHeader(player);
-            }
+            //Link Header (disabled - unnecessary clutter)
+            //if (mcMMO.p.getGeneralConfig().getUrlLinksEnabled()) {
+            //    player.sendMessage(LocaleLoader.getString("Overhaul.mcMMO.Header"));
+            //    TextComponentFactory.sendPlayerUrlHeader(player);
+            //}
 
             if (mcMMO.p.getGeneralConfig().getScoreboardsEnabled() && mcMMO.p.getGeneralConfig()
                     .getSkillUseBoard()) {

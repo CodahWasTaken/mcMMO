@@ -21,22 +21,8 @@ public class McmmoCommand implements CommandExecutor {
                     return true;
                 }
 
-                String description = LocaleLoader.getString("mcMMO.Description");
-                String[] mcSplit = description.split(",");
-                sender.sendMessage(mcSplit);
-                sender.sendMessage(LocaleLoader.getString("mcMMO.Description.FormerDevs"));
-
-                if (mcMMO.p.getGeneralConfig().getDonateMessageEnabled()) {
-                    sender.sendMessage(LocaleLoader.getString("MOTD.Donate"));
-                    sender.sendMessage(
-                            ChatColor.GOLD + " - " + ChatColor.GREEN + "nossr50@gmail.com"
-                                    + ChatColor.GOLD + " Paypal");
-                }
-
-                if (Permissions.showversion(sender)) {
-                    sender.sendMessage(LocaleLoader.getString("MOTD.Version",
-                            mcMMO.p.getDescription().getVersion()));
-                }
+                sender.sendMessage(LocaleLoader.getString("Commands.SkillInfo"));
+                sender.sendMessage(ChatColor.GOLD + " - Use " + ChatColor.GREEN + "/mcmmo help" + ChatColor.GOLD + " to see commands");
 
 //                mcMMO.getHolidayManager().anniversaryCheck(sender);
                 return true;

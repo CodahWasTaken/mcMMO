@@ -8,6 +8,7 @@ import com.gmail.nossr50.commands.McnotifyCommand;
 import com.gmail.nossr50.commands.McrefreshCommand;
 import com.gmail.nossr50.commands.McscoreboardCommand;
 import com.gmail.nossr50.commands.XprateCommand;
+import com.gmail.nossr50.commands.admin.DebugBrewingCommand;
 import com.gmail.nossr50.commands.admin.McmmoReloadLocaleCommand;
 import com.gmail.nossr50.commands.admin.PlayerDebugCommand;
 import com.gmail.nossr50.commands.chat.McChatSpy;
@@ -394,6 +395,15 @@ public final class CommandRegistrationManager {
         command.setExecutor(new McscoreboardCommand());
     }
 
+    private static void registerDebugBrewingCommand() {
+        PluginCommand command = mcMMO.p.getCommand("debugbrewing");
+        command.setDescription("Toggles brewing stand inventory debug logging");
+        command.setPermission("mcmmo.commands.debugbrewing");
+        command.setPermissionMessage(permissionsMessage);
+        command.setUsage(LocaleLoader.getString("Commands.Usage.0", "debugbrewing"));
+        command.setExecutor(new DebugBrewingCommand());
+    }
+
     private static void registerReloadLocaleCommand() {
         PluginCommand command = mcMMO.p.getCommand("mcmmoreloadlocale");
         command.setDescription("Reloads locale"); // TODO: Localize
@@ -458,5 +468,6 @@ public final class CommandRegistrationManager {
 
         // Admin commands
         registerReloadLocaleCommand();
+        registerDebugBrewingCommand();
     }
 }

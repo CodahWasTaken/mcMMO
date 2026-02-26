@@ -219,6 +219,16 @@ public class GeneralConfig extends BukkitConfig {
         return config.getBoolean("General.Verbose_Logging", false);
     }
 
+    private static boolean inventoryDebugLogging = false;
+
+    public static void toggleInventoryDebugLogging() {
+        inventoryDebugLogging = !inventoryDebugLogging;
+    }
+
+    public static boolean isInventoryDebugLogging() {
+        return inventoryDebugLogging;
+    }
+
 
     public boolean getMatchOfflinePlayers() {
         return config.getBoolean("Commands.Generic.Match_OfflinePlayers", false);
