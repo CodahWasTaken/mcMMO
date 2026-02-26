@@ -304,6 +304,35 @@ public class InventoryListener implements Listener {
                     return;
                 }
 
+                if (!emptyClicked && click == ClickType.RIGHT && clicked.getAmount() > 1) {
+                    // Right-click pickup: pick up half the stack
+                    event.setCancelled(true);
+                    int total = clicked.getAmount();
+                    int pickupAmount = (int) Math.ceil(total / 2.0);
+                    int remainAmount = total - pickupAmount;
+
+                    ItemStack pickup = clicked.clone();
+                    pickup.setAmount(pickupAmount);
+
+                    plugin.getLogger().info("[BrewDebug] -> RIGHT pickup: taking " + pickupAmount + ", leaving " + remainAmount);
+
+                    mcMMO.p.getFoliaLib().getScheduler().runAtLocationLater(
+                            stand.getLocation(), (wrappedTask) -> {
+                                if (remainAmount > 0) {
+                                    ItemStack remain = clicked.clone();
+                                    remain.setAmount(remainAmount);
+                                    stand.getInventory().setIngredient(remain);
+                                } else {
+                                    stand.getInventory().setIngredient(null);
+                                }
+                                player.setItemOnCursor(pickup);
+                                player.updateInventory();
+                                plugin.getLogger().info("[BrewDebug] -> Next-tick RIGHT pickup executed");
+                                AlchemyPotionBrewer.scheduleCheck(stand);
+                            }, 1L);
+                    return;
+                }
+
                 plugin.getLogger().info("[BrewDebug] -> Empty cursor, scheduling check (pickup)");
                 AlchemyPotionBrewer.scheduleCheck(stand);
             } else if (emptyClicked) {
@@ -347,7 +376,8 @@ public class InventoryListener implements Listener {
                                 }, 1L);
                     }
                 } else {
-                    plugin.getLogger().info("[BrewDebug] -> Invalid ingredient, doing nothing");
+                    event.setCancelled(true);
+                    plugin.getLogger().info("[BrewDebug] -> Invalid ingredient, cancelled event");
                 }
             } else {
                 plugin.getLogger().info("[BrewDebug] -> Slot not empty and cursor not empty, no handling (swap case)");
