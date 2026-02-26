@@ -343,6 +343,14 @@ public final class AlchemyPotionBrewer {
         return false;
     }
 
+    public static void setInventorySlot(InventoryView view, int slot, ItemStack item) {
+        try {
+            setItem.invoke(view, slot, item);
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void scheduleCheck(@NotNull BrewingStand brewingStand) {
         mcMMO.p.getFoliaLib().getScheduler().runAtLocation(
                 brewingStand.getLocation(), new AlchemyBrewCheckTask(brewingStand));

@@ -239,12 +239,26 @@ public class InventoryListener implements Listener {
         final ItemStack clicked = event.getCurrentItem();
         final ItemStack cursor = event.getCursor();
 
+        // DEBUG logging
+        plugin.getLogger().info("[BrewDebug] === InventoryClickEvent ===");
+        plugin.getLogger().info("[BrewDebug] Player: " + player.getName());
+        plugin.getLogger().info("[BrewDebug] ClickType: " + event.getClick());
+        plugin.getLogger().info("[BrewDebug] SlotType: " + event.getSlotType());
+        plugin.getLogger().info("[BrewDebug] RawSlot: " + event.getRawSlot());
+        plugin.getLogger().info("[BrewDebug] Slot: " + event.getSlot());
+        plugin.getLogger().info("[BrewDebug] Action: " + event.getAction());
+        plugin.getLogger().info("[BrewDebug] Clicked (currentItem): " + clicked);
+        plugin.getLogger().info("[BrewDebug] Cursor: " + cursor);
+        plugin.getLogger().info("[BrewDebug] isValidIngredient(cursor): " + (cursor != null && !AlchemyPotionBrewer.isEmpty(cursor) ? AlchemyPotionBrewer.isValidIngredientByPlayer(player, cursor) : "N/A (empty)"));
+        plugin.getLogger().info("[BrewDebug] isValidIngredient(clicked): " + (clicked != null && !AlchemyPotionBrewer.isEmpty(clicked) ? AlchemyPotionBrewer.isValidIngredientByPlayer(player, clicked) : "N/A (empty)"));
+
         if ((clicked != null && (clicked.getType() == Material.POTION
                 || clicked.getType() == Material.SPLASH_POTION
                 || clicked.getType() == Material.LINGERING_POTION))
                 || (cursor != null && (cursor.getType() == Material.POTION
                 || cursor.getType() == Material.SPLASH_POTION
                 || cursor.getType() == Material.LINGERING_POTION))) {
+            plugin.getLogger().info("[BrewDebug] -> Early return: potion detected, scheduling check");
             AlchemyPotionBrewer.scheduleCheck(stand);
             return;
         }
@@ -253,46 +267,65 @@ public class InventoryListener implements Listener {
         InventoryType.SlotType slot = event.getSlotType();
 
         if (click.isShiftClick()) {
+            plugin.getLogger().info("[BrewDebug] -> Shift-click path, slot=" + slot);
             switch (slot) {
                 case FUEL:
+                    plugin.getLogger().info("[BrewDebug] -> Shift-click on FUEL slot, scheduling check");
                     AlchemyPotionBrewer.scheduleCheck(stand);
                     return;
                 case CONTAINER:
                 case QUICKBAR:
                     if (!AlchemyPotionBrewer.isValidIngredientByPlayer(player, clicked)) {
+                        plugin.getLogger().info("[BrewDebug] -> Shift-click: invalid ingredient, returning");
                         return;
                     }
 
                     if (!AlchemyPotionBrewer.transferItems(event.getView(), event.getRawSlot(),
                             click)) {
+                        plugin.getLogger().info("[BrewDebug] -> Shift-click: transferItems returned false");
                         return;
                     }
 
                     event.setCancelled(true);
+                    plugin.getLogger().info("[BrewDebug] -> Shift-click: transfer success, cancelled event, scheduling check");
                     AlchemyPotionBrewer.scheduleCheck(stand);
                     return;
                 default:
+                    plugin.getLogger().info("[BrewDebug] -> Shift-click: unhandled slot type " + slot);
             }
         } else if (slot == InventoryType.SlotType.FUEL) {
             boolean emptyClicked = AlchemyPotionBrewer.isEmpty(clicked);
+            plugin.getLogger().info("[BrewDebug] -> Manual click on FUEL slot, emptyClicked=" + emptyClicked + ", emptyCursor=" + AlchemyPotionBrewer.isEmpty(cursor));
 
             if (AlchemyPotionBrewer.isEmpty(cursor)) {
                 if (emptyClicked && click == ClickType.NUMBER_KEY) {
+                    plugin.getLogger().info("[BrewDebug] -> Empty cursor + empty slot + NUMBER_KEY, scheduling check");
                     AlchemyPotionBrewer.scheduleCheck(stand);
                     return;
                 }
 
+                plugin.getLogger().info("[BrewDebug] -> Empty cursor, scheduling check (pickup)");
                 AlchemyPotionBrewer.scheduleCheck(stand);
             } else if (emptyClicked) {
-                if (AlchemyPotionBrewer.isValidIngredientByPlayer(player, cursor)) {
+                boolean validIngredient = AlchemyPotionBrewer.isValidIngredientByPlayer(player, cursor);
+                plugin.getLogger().info("[BrewDebug] -> Placing item: cursor=" + cursor.getType() + " x" + cursor.getAmount() + ", validIngredient=" + validIngredient);
+
+                if (validIngredient) {
                     int amount = cursor.getAmount();
 
                     if (click == ClickType.LEFT || (click == ClickType.RIGHT && amount == 1)) {
                         event.setCancelled(true);
-                        event.setCurrentItem(cursor.clone());
-                        event.setCursor(null);
+                        final ItemStack toPlace = cursor.clone();
+                        plugin.getLogger().info("[BrewDebug] -> LEFT/single-RIGHT: scheduling next-tick placement of " + toPlace.getType() + " x" + toPlace.getAmount());
 
-                        AlchemyPotionBrewer.scheduleCheck(stand);
+                        mcMMO.p.getFoliaLib().getScheduler().runAtLocationLater(
+                                stand.getLocation(), (wrappedTask) -> {
+                                    stand.getInventory().setIngredient(toPlace);
+                                    player.setItemOnCursor(null);
+                                    player.updateInventory();
+                                    plugin.getLogger().info("[BrewDebug] -> Next-tick placement executed");
+                                    AlchemyPotionBrewer.scheduleCheck(stand);
+                                }, 1L);
                     } else if (click == ClickType.RIGHT) {
                         event.setCancelled(true);
 
@@ -302,13 +335,25 @@ public class InventoryListener implements Listener {
                         ItemStack rest = cursor.clone();
                         rest.setAmount(amount - 1);
 
-                        event.setCurrentItem(one);
-                        event.setCursor(rest);
+                        plugin.getLogger().info("[BrewDebug] -> RIGHT: scheduling next-tick placement of 1, keeping " + rest.getAmount());
 
-                        AlchemyPotionBrewer.scheduleCheck(stand);
+                        mcMMO.p.getFoliaLib().getScheduler().runAtLocationLater(
+                                stand.getLocation(), (wrappedTask) -> {
+                                    stand.getInventory().setIngredient(one);
+                                    player.setItemOnCursor(rest);
+                                    player.updateInventory();
+                                    plugin.getLogger().info("[BrewDebug] -> Next-tick RIGHT placement executed");
+                                    AlchemyPotionBrewer.scheduleCheck(stand);
+                                }, 1L);
                     }
+                } else {
+                    plugin.getLogger().info("[BrewDebug] -> Invalid ingredient, doing nothing");
                 }
+            } else {
+                plugin.getLogger().info("[BrewDebug] -> Slot not empty and cursor not empty, no handling (swap case)");
             }
+        } else {
+            plugin.getLogger().info("[BrewDebug] -> Not shift-click and slotType=" + slot + " (not FUEL), no handling");
         }
     }
 
