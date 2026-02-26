@@ -383,6 +383,45 @@ public class InventoryListener implements Listener {
                 plugin.getLogger().info("[BrewDebug] -> Slot not empty and cursor not empty, no handling (swap case)");
             }
         } else {
+            // Validate items placed into brewing stand slots (raw slots 0-4)
+            int rawSlot = event.getRawSlot();
+            if (!AlchemyPotionBrewer.isEmpty(cursor) && rawSlot >= 0 && rawSlot <= 4) {
+                Material cursorType = cursor.getType();
+                boolean blocked = false;
+
+                if (rawSlot <= 2) {
+                    // Bottle slots (0-2): only accept potions and glass bottles
+                    if (cursorType != Material.POTION
+                            && cursorType != Material.SPLASH_POTION
+                            && cursorType != Material.LINGERING_POTION
+                            && cursorType != Material.GLASS_BOTTLE) {
+                        blocked = true;
+                    }
+                } else if (rawSlot == 4) {
+                    // Fuel slot (4): only accept blaze powder
+                    if (cursorType != Material.BLAZE_POWDER) {
+                        blocked = true;
+                    }
+                }
+
+                if (blocked) {
+                    event.setCancelled(true);
+                    final ItemStack savedCursor = cursor.clone();
+                    final int blockedSlot = rawSlot;
+                    plugin.getLogger().info("[BrewDebug] -> Blocked invalid item " + cursorType + " from slot " + rawSlot + ", scheduling next-tick revert");
+
+                    mcMMO.p.getFoliaLib().getScheduler().runAtLocationLater(
+                            stand.getLocation(), (wrappedTask) -> {
+                                // Revert: clear the slot and restore the cursor
+                                stand.getInventory().setItem(blockedSlot, null);
+                                player.setItemOnCursor(savedCursor);
+                                player.updateInventory();
+                                plugin.getLogger().info("[BrewDebug] -> Next-tick slot revert executed for slot " + blockedSlot);
+                            }, 1L);
+                    return;
+                }
+            }
+
             plugin.getLogger().info("[BrewDebug] -> Not shift-click and slotType=" + slot + " (not FUEL), no handling");
         }
     }
