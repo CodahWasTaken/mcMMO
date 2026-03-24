@@ -31,17 +31,7 @@ public class CrossbowsManager extends SkillManager {
 
     public void handleRicochet(@NotNull Plugin pluginRef, @NotNull Arrow arrow,
             @NotNull Vector hitBlockNormal) {
-        if (!arrow.isShotFromCrossbow()) {
-            return;
-        }
-
-        // Check player permission
-        if (!Permissions.trickShot(mmoPlayer.getPlayer())) {
-            return;
-        }
-
-        // TODO: Add an event for this for plugins to hook into
-        spawnReflectedArrow(pluginRef, arrow, arrow.getLocation(), hitBlockNormal);
+        // Disabled: spawning a reflected arrow corrupts tipped arrow pickup items
     }
 
     private void spawnReflectedArrow(@NotNull Plugin pluginRef, @NotNull Arrow originalArrow,

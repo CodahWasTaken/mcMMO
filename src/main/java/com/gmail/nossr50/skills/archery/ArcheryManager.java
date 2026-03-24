@@ -46,11 +46,8 @@ public class ArcheryManager extends SkillManager {
     }
 
     public boolean canRetrieveArrows() {
-        if (!RankUtils.hasUnlockedSubskill(getPlayer(), SubSkillType.ARCHERY_ARROW_RETRIEVAL)) {
-            return false;
-        }
-
-        return Permissions.isSubSkillEnabled(getPlayer(), SubSkillType.ARCHERY_ARROW_RETRIEVAL);
+        // Disabled: arrow retrieval always drops plain ARROW regardless of original type
+        return false;
     }
 
     /**
