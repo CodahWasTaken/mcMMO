@@ -114,7 +114,7 @@ public class PartyInfoCommand implements CommandExecutor {
         }
 
         if (xpShareEnabled && itemShareEnabled) {
-            separator = ChatColor.DARK_GRAY + " || ";
+            separator = ChatColor.DARK_AQUA + " || ";
         }
 
         player.sendMessage(

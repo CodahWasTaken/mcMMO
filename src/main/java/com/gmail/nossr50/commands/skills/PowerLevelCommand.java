@@ -37,7 +37,7 @@ public class PowerLevelCommand extends BaseCommand {
         int powerLevel = mmoPlayer.getPowerLevel();
 
         mmoPlayer.getPlayer().sendMessage(
-                ChatColor.DARK_AQUA + "Your " + ChatColor.GOLD + "[mcMMO]" + ChatColor.DARK_AQUA
-                        + " power level is: " + ChatColor.GREEN + powerLevel);
+                ChatColor.DARK_AQUA + "Your " + ChatColor.DARK_AQUA + "[mcMMO]" + ChatColor.DARK_AQUA
+                        + " power level is: " + ChatColor.WHITE + powerLevel);
     }
 }

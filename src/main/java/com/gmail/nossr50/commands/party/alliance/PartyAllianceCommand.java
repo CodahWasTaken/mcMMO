@@ -138,7 +138,7 @@ public class PartyAllianceCommand implements TabExecutor {
         List<Player> nearMembers = mcMMO.p.getPartyManager().getNearMembers(mmoPlayer);
         player.sendMessage(LocaleLoader.getString("Commands.Party.Alliance.Members.Header"));
         player.sendMessage(playerParty.createMembersList(player));
-        player.sendMessage(ChatColor.DARK_GRAY + "----------------------------");
+        player.sendMessage(ChatColor.DARK_AQUA + "----------------------------");
         player.sendMessage(targetParty.createMembersList(player));
     }
 }

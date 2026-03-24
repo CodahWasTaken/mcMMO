@@ -127,7 +127,7 @@ public class ScoreboardManager {
             for (PrimarySkillType primarySkillType : PrimarySkillType.values()) {
                 // Include child skills
                 skillLabelBuilder.put(primarySkillType, getShortenedName(
-                        ChatColor.GREEN + mcMMO.p.getSkillTools()
+                        ChatColor.DARK_AQUA + mcMMO.p.getSkillTools()
                                 .getLocalizedSkillName(primarySkillType)));
 
                 if (mcMMO.p.getSkillTools().getSuperAbility(primarySkillType) != null) {
@@ -146,7 +146,7 @@ public class ScoreboardManager {
 
         for (SuperAbilityType type : SuperAbilityType.values()) {
             abilityLabelSkillBuilder.put(type, formatAbility(
-                    (type == SuperAbilityType.BLAST_MINING ? ChatColor.BLUE : ChatColor.AQUA),
+                    (type == SuperAbilityType.BLAST_MINING ? ChatColor.DARK_AQUA : ChatColor.WHITE),
                     type.getLocalizedName()));
         }
 
@@ -167,7 +167,7 @@ public class ScoreboardManager {
     }
 
     private static String formatAbility(String abilityName) {
-        return formatAbility(ChatColor.AQUA, abilityName);
+        return formatAbility(ChatColor.WHITE, abilityName);
     }
 
     private static String formatAbility(ChatColor color, String abilityName) {

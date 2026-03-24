@@ -15,7 +15,7 @@ public class DebugBrewingCommand implements CommandExecutor {
             String[] args) {
         GeneralConfig.toggleInventoryDebugLogging();
         boolean enabled = GeneralConfig.isInventoryDebugLogging();
-        sender.sendMessage(ChatColor.GOLD + "[mcMMO] " + ChatColor.WHITE
+        sender.sendMessage(ChatColor.DARK_AQUA + "[mcMMO] " + ChatColor.WHITE
                 + "Brewing inventory debug logging: "
                 + (enabled ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
         return true;
