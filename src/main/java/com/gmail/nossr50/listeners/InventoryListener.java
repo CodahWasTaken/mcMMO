@@ -319,20 +319,17 @@ public class InventoryListener implements Listener {
 
                     if (debug) plugin.getLogger().info("[BrewDebug] -> RIGHT pickup: taking " + pickupAmount + ", leaving " + remainAmount);
 
-                    mcMMO.p.getFoliaLib().getScheduler().runAtLocationLater(
-                            stand.getLocation(), (wrappedTask) -> {
-                                if (remainAmount > 0) {
-                                    ItemStack remain = clicked.clone();
-                                    remain.setAmount(remainAmount);
-                                    stand.getInventory().setIngredient(remain);
-                                } else {
-                                    stand.getInventory().setIngredient(null);
-                                }
-                                player.setItemOnCursor(pickup);
-                                player.updateInventory();
-                                if (debug) plugin.getLogger().info("[BrewDebug] -> Next-tick RIGHT pickup executed");
-                                AlchemyPotionBrewer.scheduleCheck(stand);
-                            }, 1L);
+                    if (remainAmount > 0) {
+                        ItemStack remain = clicked.clone();
+                        remain.setAmount(remainAmount);
+                        stand.getInventory().setIngredient(remain);
+                    } else {
+                        stand.getInventory().setIngredient(null);
+                    }
+                    player.setItemOnCursor(pickup);
+                    player.updateInventory();
+                    if (debug) plugin.getLogger().info("[BrewDebug] -> Synchronous RIGHT pickup executed");
+                    AlchemyPotionBrewer.scheduleCheck(stand);
                     return;
                 }
 
@@ -350,14 +347,11 @@ public class InventoryListener implements Listener {
                         final ItemStack toPlace = cursor.clone();
                         if (debug) plugin.getLogger().info("[BrewDebug] -> LEFT/single-RIGHT: scheduling next-tick placement of " + toPlace.getType() + " x" + toPlace.getAmount());
 
-                        mcMMO.p.getFoliaLib().getScheduler().runAtLocationLater(
-                                stand.getLocation(), (wrappedTask) -> {
-                                    stand.getInventory().setIngredient(toPlace);
-                                    player.setItemOnCursor(null);
-                                    player.updateInventory();
-                                    if (debug) plugin.getLogger().info("[BrewDebug] -> Next-tick placement executed");
-                                    AlchemyPotionBrewer.scheduleCheck(stand);
-                                }, 1L);
+                        stand.getInventory().setIngredient(toPlace);
+                        player.setItemOnCursor(null);
+                        player.updateInventory();
+                        if (debug) plugin.getLogger().info("[BrewDebug] -> Synchronous placement executed");
+                        AlchemyPotionBrewer.scheduleCheck(stand);
                     } else if (click == ClickType.RIGHT) {
                         event.setCancelled(true);
 
@@ -369,14 +363,11 @@ public class InventoryListener implements Listener {
 
                         if (debug) plugin.getLogger().info("[BrewDebug] -> RIGHT: scheduling next-tick placement of 1, keeping " + rest.getAmount());
 
-                        mcMMO.p.getFoliaLib().getScheduler().runAtLocationLater(
-                                stand.getLocation(), (wrappedTask) -> {
-                                    stand.getInventory().setIngredient(one);
-                                    player.setItemOnCursor(rest);
-                                    player.updateInventory();
-                                    if (debug) plugin.getLogger().info("[BrewDebug] -> Next-tick RIGHT placement executed");
-                                    AlchemyPotionBrewer.scheduleCheck(stand);
-                                }, 1L);
+                        stand.getInventory().setIngredient(one);
+                        player.setItemOnCursor(rest);
+                        player.updateInventory();
+                        if (debug) plugin.getLogger().info("[BrewDebug] -> Synchronous RIGHT placement executed");
+                        AlchemyPotionBrewer.scheduleCheck(stand);
                     }
                 } else {
                     event.setCancelled(true);
@@ -413,14 +404,10 @@ public class InventoryListener implements Listener {
                     final int blockedSlot = rawSlot;
                     if (debug) plugin.getLogger().info("[BrewDebug] -> Blocked invalid item " + cursorType + " from slot " + rawSlot + ", scheduling next-tick revert");
 
-                    mcMMO.p.getFoliaLib().getScheduler().runAtLocationLater(
-                            stand.getLocation(), (wrappedTask) -> {
-                                // Revert: clear the slot and restore the cursor
-                                stand.getInventory().setItem(blockedSlot, null);
-                                player.setItemOnCursor(savedCursor);
-                                player.updateInventory();
-                                if (debug) plugin.getLogger().info("[BrewDebug] -> Next-tick slot revert executed for slot " + blockedSlot);
-                            }, 1L);
+                    stand.getInventory().setItem(blockedSlot, null);
+                    player.setItemOnCursor(savedCursor);
+                    player.updateInventory();
+                    if (debug) plugin.getLogger().info("[BrewDebug] -> Synchronous slot revert executed for slot " + blockedSlot);
                     return;
                 }
             }
