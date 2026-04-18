@@ -5,6 +5,7 @@ import static com.gmail.nossr50.util.AttributeMapper.MAPPED_MOVEMENT_SPEED;
 import static com.gmail.nossr50.util.MobMetadataUtils.hasMobFlag;
 import static com.gmail.nossr50.util.Permissions.canUseSubSkill;
 
+import com.gmail.nossr50.config.CoreSkillsConfig;
 import com.gmail.nossr50.config.experience.ExperienceConfig;
 import com.gmail.nossr50.datatypes.experience.XPGainReason;
 import com.gmail.nossr50.datatypes.interactions.NotificationType;
@@ -705,6 +706,9 @@ public final class CombatUtils {
             final double attackStrengthScale = computeAttackStrengthScale(player, event);
 
             if (isDamageTypeSpear) {
+                if (!CoreSkillsConfig.getInstance().isPrimarySkillEnabled(PrimarySkillType.SPEARS)) {
+                    return;
+                }
                 if (!mcMMO.p.getSkillTools()
                         .canCombatSkillsTrigger(PrimarySkillType.SPEARS, target)) {
                     return;
@@ -734,6 +738,9 @@ public final class CombatUtils {
                     processAxeCombat(target, player, event, attackStrengthScale);
                 }
             } else if (ItemUtils.isUnarmed(heldItem)) {
+                if (!CoreSkillsConfig.getInstance().isPrimarySkillEnabled(PrimarySkillType.UNARMED)) {
+                    return;
+                }
                 if (!mcMMO.p.getSkillTools()
                         .canCombatSkillsTrigger(PrimarySkillType.UNARMED, target)) {
                     return;
@@ -754,6 +761,9 @@ public final class CombatUtils {
                     processTridentCombatMelee(target, player, event, attackStrengthScale);
                 }
             } else if (ItemUtils.isMace(heldItem)) {
+                if (!CoreSkillsConfig.getInstance().isPrimarySkillEnabled(PrimarySkillType.MACES)) {
+                    return;
+                }
                 if (!mcMMO.p.getSkillTools()
                         .canCombatSkillsTrigger(PrimarySkillType.MACES, target)) {
                     return;

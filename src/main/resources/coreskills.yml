@@ -7,3 +7,18 @@ Acrobatics:
     Enabled: true
     Roll:
         Enabled: true
+
+#Spears
+Spears:
+    # turn this to false to disable the Spears skill entirely
+    Enabled: true
+
+#Maces
+Maces:
+    # turn this to false to disable the Maces skill entirely
+    Enabled: true
+
+#Unarmed
+Unarmed:
+    # turn this to false to disable the Unarmed skill entirely
+    Enabled: true

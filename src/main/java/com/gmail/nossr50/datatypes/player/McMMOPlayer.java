@@ -6,6 +6,7 @@ import static java.util.Objects.requireNonNull;
 import com.gmail.nossr50.api.exceptions.InvalidSkillException;
 import com.gmail.nossr50.chat.author.PlayerAuthor;
 import com.gmail.nossr50.config.ChatConfig;
+import com.gmail.nossr50.config.CoreSkillsConfig;
 import com.gmail.nossr50.config.WorldBlacklist;
 import com.gmail.nossr50.config.experience.ExperienceConfig;
 import com.gmail.nossr50.datatypes.chat.ChatChannel;
@@ -1003,6 +1004,10 @@ public class McMMOPlayer implements Identified {
     }
 
     public void processAbilityActivation(@NotNull PrimarySkillType primarySkillType) {
+        if (!CoreSkillsConfig.getInstance().isPrimarySkillEnabled(primarySkillType)) {
+            return;
+        }
+
         if (!mcMMO.p.getSkillTools().doesPlayerHaveSkillPermission(getPlayer(), primarySkillType)) {
             return;
         }
